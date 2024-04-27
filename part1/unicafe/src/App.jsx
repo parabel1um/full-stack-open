@@ -24,6 +24,8 @@ const App = () => {
     setBad(bad + 1);
   };
 
+  const sum = good + neutral + bad;
+
   return (
     <div>
       <h1>give feedback</h1>
@@ -34,6 +36,9 @@ const App = () => {
       <Display value={"good " + good} />
       <Display value={"neutral " + neutral} />
       <Display value={"bad " + bad} />
+      <Display value={"all " + sum} />
+      <Display value={"average " + (good + bad * -1) / sum} />
+      <Display value={"positive " + (good / sum) * 100 + " %"} />
     </div>
   );
 };
