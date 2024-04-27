@@ -2,9 +2,11 @@ import React from "react";
 import { useState } from "react";
 
 const StatisticLine = (props) => (
-  <p>
-    {props.text} {props.value}
-  </p>
+  <tr>
+    <td>{props.text}</td>
+    <td> </td>
+    <td>{props.value}</td>
+  </tr>
 );
 
 const Button = (props) => {
