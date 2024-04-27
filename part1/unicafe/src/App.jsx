@@ -10,6 +10,10 @@ const Button = (props) => {
 const Statistics = (props) => {
   const sum = props.good + props.neutral + props.bad;
 
+  if (sum == 0) {
+    return <p>No feedback given</p>;
+  }
+
   return (
     <>
       <Display value={"good " + props.good} />
