@@ -1,7 +1,11 @@
 import React from "react";
 import { useState } from "react";
 
-const Display = (props) => <p>{props.value}</p>;
+const StatisticLine = (props) => (
+  <p>
+    {props.text} {props.value}
+  </p>
+);
 
 const Button = (props) => {
   return <button onClick={props.handleClick}>{props.text}</button>;
@@ -16,12 +20,18 @@ const Statistics = (props) => {
 
   return (
     <>
-      <Display value={"good " + props.good} />
-      <Display value={"neutral " + props.neutral} />
-      <Display value={"bad " + props.bad} />
-      <Display value={"all " + sum} />
-      <Display value={"average " + (props.good + props.bad * -1) / sum} />
-      <Display value={"positive " + (props.good / sum) * 100 + " %"} />
+      <StatisticLine text="good" value={props.good} />
+      <StatisticLine text="neutral" value={props.neutral} />
+      <StatisticLine text="bad" value={props.bad} />
+      <StatisticLine
+        text="all"
+        value={props.good + props.neutral + props.bad}
+      />
+      <StatisticLine
+        text="average"
+        value={(props.good + props.bad * -1) / sum}
+      />
+      <StatisticLine text="positive" value={(props.good / sum) * 100 + " %"} />
     </>
   );
 };
