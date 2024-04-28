@@ -1,5 +1,25 @@
 import React, { useState } from "react";
 
+const AnecdoteWithMostVotes = (props) => {
+  let mostVotes = Math.max(...props.points);
+  console.log(mostVotes);
+  let indexOfMostVotes = 0;
+
+  for (let i = 0; i <= props.points.length; i++) {
+    if (mostVotes === props.points[i]) {
+      indexOfMostVotes = i;
+    }
+  }
+
+  return (
+    <>
+      <h1>Anecdote with most votes</h1>
+      <p>{props.anecdotes[indexOfMostVotes]}</p>
+      <p>has {mostVotes} votes</p>
+    </>
+  );
+};
+
 const DisplayVotes = (props) => {
   const votesCount = props.points[props.selected];
 
@@ -38,10 +58,12 @@ const App = () => {
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
       <DisplayVotes selected={selected} points={points} />
       <button onClick={handleVote}>Vote</button>
       <button onClick={handleClick}>Next Anecdote</button>
+      <AnecdoteWithMostVotes points={points} anecdotes={anecdotes} />
     </div>
   );
 };
