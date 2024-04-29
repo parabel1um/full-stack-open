@@ -1,32 +1,42 @@
 import React from "react";
 
+const Total = (props) => {
+  return <b>total of {props.total} exercises</b>;
+};
+
 const Header = (props) => {
   return <h1>{props.header}</h1>;
 };
 
 const Part = (props) => {
   return (
-    <li>
+    <p>
       {props.name} {props.exercises}
-    </li>
+    </p>
   );
 };
 
 const Content = (props) => {
   return (
-    <ul>
-      {props.content.map((part) => (
+    <div>
+      {props.parts.map((part) => (
         <Part key={part.id} name={part.name} exercises={part.exercises} />
       ))}
-    </ul>
+    </div>
   );
 };
 
 const Course = (props) => {
+  const total = props.course.parts.reduce(
+    (sum, part) => (sum += part.exercises),
+    0
+  );
+
   return (
     <div>
       <Header header={props.course.name} />
-      <Content content={props.course.parts} />
+      <Content parts={props.course.parts} />
+      <Total total={total} />
     </div>
   );
 };
@@ -50,6 +60,11 @@ const App = () => {
         name: "State of a component",
         exercises: 14,
         id: 3,
+      },
+      {
+        name: "Redux",
+        exercises: 11,
+        id: 4,
       },
     ],
   };
