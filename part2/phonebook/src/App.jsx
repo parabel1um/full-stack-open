@@ -7,6 +7,7 @@ const App = () => {
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [filter, setFilter] = useState("");
 
   const nameAlreadyExists = (nameToCheck) => {
     return persons.some((person) => person.name === nameToCheck);
@@ -24,9 +25,21 @@ const App = () => {
     }
   };
 
+  const filteredPersons = persons.filter((person) =>
+    person.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        filter shown with
+        <input
+          value={filter}
+          onChange={(event) => setFilter(event.target.value)}
+        />
+      </div>
+      <h2>Add a new</h2>
       <form onSubmit={handleNewSubmit}>
         <div>
           name:{" "}
@@ -48,7 +61,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <div>
-        {persons.map((person, index) => (
+        {filteredPersons.map((person, index) => (
           <p key={index}>
             {person.name} {person.number}
           </p>
