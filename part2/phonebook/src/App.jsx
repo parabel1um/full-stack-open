@@ -1,72 +1,101 @@
 import React from "react";
 import { useState } from "react";
 
-const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-1234567" },
-  ]);
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
-  const [filter, setFilter] = useState("");
+const Filter = (props) => {
+  return (
+    <div>
+      filter shown with
+      <input
+        value={props.filter}
+        onChange={(event) => props.setFilter(event.target.value)}
+      />
+    </div>
+  );
+};
 
+const PersonForm = (props) => {
   const nameAlreadyExists = (nameToCheck) => {
-    return persons.some((person) => person.name === nameToCheck);
+    return props.persons.some((person) => person.name === nameToCheck);
   };
 
   const handleNewSubmit = (event) => {
     event.preventDefault();
 
-    if (nameAlreadyExists(newName)) {
-      alert(`${newName} is already added to phonebook`);
+    if (nameAlreadyExists(props.newName)) {
+      alert(`${props.newName} is already added to phonebook`);
     } else {
-      setPersons([...persons, { name: newName, number: newNumber }]);
-      setNewName("");
-      setNewNumber("");
+      props.setPersons([
+        ...props.persons,
+        { name: props.newName, number: props.newNumber },
+      ]);
+      props.setNewName("");
+      props.setNewNumber("");
     }
   };
 
-  const filteredPersons = persons.filter((person) =>
-    person.name.toLowerCase().includes(filter.toLowerCase())
+  return (
+    <form onSubmit={handleNewSubmit}>
+      <div>
+        name:{" "}
+        <input
+          value={props.newName}
+          onChange={(event) => props.setNewName(event.target.value)}
+        />
+      </div>
+      <div>
+        number:{" "}
+        <input
+          value={props.newNumber}
+          onChange={(event) => props.setNewNumber(event.target.value)}
+        />
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  );
+};
+
+const Persons = (props) => {
+  const filteredPersons = props.persons.filter((person) =>
+    person.name.toLowerCase().includes(props.filter.toLowerCase())
   );
 
   return (
     <div>
+      {filteredPersons.map((person, index) => (
+        <p key={person.name}>
+          {person.name} {person.number}
+        </p>
+      ))}
+    </div>
+  );
+};
+
+const App = () => {
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", number: "040-1234567" },
+  ]);
+
+  const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("");
+  const [filter, setFilter] = useState("");
+
+  return (
+    <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with
-        <input
-          value={filter}
-          onChange={(event) => setFilter(event.target.value)}
-        />
-      </div>
+      <Filter filter={filter} setFilter={setFilter} />
       <h2>Add a new</h2>
-      <form onSubmit={handleNewSubmit}>
-        <div>
-          name:{" "}
-          <input
-            value={newName}
-            onChange={(event) => setNewName(event.target.value)}
-          />
-        </div>
-        <div>
-          number:{" "}
-          <input
-            value={newNumber}
-            onChange={(event) => setNewNumber(event.target.value)}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        persons={persons}
+        newNumber={newNumber}
+        newName={newName}
+        setNewName={setNewName}
+        setNewNumber={setNewNumber}
+        setPersons={setPersons}
+      />
       <h2>Numbers</h2>
-      <div>
-        {filteredPersons.map((person, index) => (
-          <p key={index}>
-            {person.name} {person.number}
-          </p>
-        ))}
-      </div>
+      <Persons persons={persons} filter={filter} />
     </div>
   );
 };
