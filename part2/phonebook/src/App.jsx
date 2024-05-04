@@ -1,5 +1,6 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const Filter = (props) => {
   return (
@@ -73,19 +74,22 @@ const Persons = (props) => {
 };
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-1234567" },
-  ]);
-
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons").then((response) => {
+      setPersons(response.data);
+    });
+  }, []);
 
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter filter={filter} setFilter={setFilter} />
-      <h2>Add a new</h2>
+      <h3>Add a new</h3>
       <PersonForm
         persons={persons}
         newNumber={newNumber}
@@ -94,7 +98,7 @@ const App = () => {
         setNewNumber={setNewNumber}
         setPersons={setPersons}
       />
-      <h2>Numbers</h2>
+      <h3>Numbers</h3>
       <Persons persons={persons} filter={filter} />
     </div>
   );
