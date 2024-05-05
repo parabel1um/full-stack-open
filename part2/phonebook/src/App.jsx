@@ -25,10 +25,14 @@ const PersonForm = (props) => {
     if (nameAlreadyExists(props.newName)) {
       alert(`${props.newName} is already added to phonebook`);
     } else {
-      props.setPersons([
-        ...props.persons,
-        { name: props.newName, number: props.newNumber },
-      ]);
+      let newObject = { name: props.newName, number: props.newNumber };
+
+      axios
+        .post("http://localhost:3001/persons", newObject)
+        .then((response) => {
+          console.log(response.data);
+          props.setPersons([...props.persons, response.data]);
+        });
       props.setNewName("");
       props.setNewNumber("");
     }
