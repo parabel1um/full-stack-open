@@ -60,21 +60,35 @@ const PersonForm = (props) => {
 };
 
 const Persons = (props) => {
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      service.remove(id).then(() => {
+        service.getAll().then((response) => {
+          props.setPersons(response.data);
+        });
+      });
+    }
+  };
+
   const filteredPersons = props.persons.filter((person) =>
     person.name.toLowerCase().includes(props.filter.toLowerCase())
   );
 
   return (
     <div>
-      {filteredPersons.map((person, index) => (
-        <p key={person.name}>
-          {person.name} {person.number}
-        </p>
+      {filteredPersons.map((person) => (
+        <div key={person.name}>
+          <p>
+            {person.name} {person.number}
+          </p>
+          <button onClick={() => handleDelete(person.id, person.name)}>
+            delete
+          </button>
+        </div>
       ))}
     </div>
   );
 };
-
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
@@ -101,7 +115,7 @@ const App = () => {
         setPersons={setPersons}
       />
       <h3>Numbers</h3>
-      <Persons persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} setPersons={setPersons} />
     </div>
   );
 };
