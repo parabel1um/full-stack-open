@@ -23,7 +23,24 @@ const PersonForm = (props) => {
     event.preventDefault();
 
     if (nameAlreadyExists(props.newName)) {
-      alert(`${props.newName} is already added to phonebook`);
+      if (
+        window.confirm(
+          `${props.newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        let id = props.persons.find((p) => p.name === props.newName).id;
+        console.log(id);
+        let newObject = { name: props.newName, number: props.newNumber };
+
+        service.update(id, newObject).then((response) => {
+          console.log(response.data);
+          props.setPersons(
+            props.persons.map((p) => (p.id === id ? response.data : p))
+          );
+        });
+        props.setNewName("");
+        props.setNewNumber("");
+      }
     } else {
       let newObject = { name: props.newName, number: props.newNumber };
 
