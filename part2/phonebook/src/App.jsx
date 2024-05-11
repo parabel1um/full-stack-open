@@ -37,6 +37,10 @@ const PersonForm = (props) => {
           props.setPersons(
             props.persons.map((p) => (p.id === id ? response.data : p))
           );
+          props.setNotification(`Number updated for ${props.newName}`);
+          setTimeout(() => {
+            props.setNotification("");
+          }, 2000);
         });
         props.setNewName("");
         props.setNewNumber("");
@@ -47,6 +51,10 @@ const PersonForm = (props) => {
       service.add(newObject).then((response) => {
         console.log(response.data);
         props.setPersons([...props.persons, response.data]);
+        props.setNotification(`Added ${props.newName}`);
+        setTimeout(() => {
+          props.setNotification("");
+        }, 2000);
       });
       props.setNewName("");
       props.setNewNumber("");
@@ -74,6 +82,31 @@ const PersonForm = (props) => {
       </div>
     </form>
   );
+};
+
+const Notification = (props) => {
+  if (props.message === "") return null;
+  else {
+    const styles = {
+      color: "red",
+      background: "lightgrey",
+      fontSize: 20,
+      borderStyle: "solid",
+      borderRadius: 5,
+      padding: 10,
+      marginBottom: 10,
+    };
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        props.setMessage("");
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }, [props.message, props.setMessage]);
+
+    return <div style={styles}>{props.message}</div>;
+  }
 };
 
 const Persons = (props) => {
@@ -106,11 +139,13 @@ const Persons = (props) => {
     </div>
   );
 };
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [notification, setNotification] = useState("");
 
   useEffect(() => {
     service.getAll().then((response) => {
@@ -121,6 +156,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {notification && (
+        <Notification message={notification} setMessage={setNotification} />
+      )}
       <Filter filter={filter} setFilter={setFilter} />
       <h3>Add a new</h3>
       <PersonForm
@@ -130,6 +168,7 @@ const App = () => {
         setNewName={setNewName}
         setNewNumber={setNewNumber}
         setPersons={setPersons}
+        setNotification={setNotification}
       />
       <h3>Numbers</h3>
       <Persons persons={persons} filter={filter} setPersons={setPersons} />
