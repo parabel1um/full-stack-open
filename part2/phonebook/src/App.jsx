@@ -112,11 +112,22 @@ const Notification = (props) => {
 const Persons = (props) => {
   const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name}?`)) {
-      service.remove(id).then(() => {
-        service.getAll().then((response) => {
-          props.setPersons(response.data);
+      service
+        .remove(id)
+        .then(() => {
+          service.getAll().then((response) => {
+            props.setPersons(response.data);
+          });
+        })
+        .catch((error) => {
+          console.log(true);
+          props.setNotification(
+            `Information of ${name} has already been removed from server`
+          );
+          setTimeout(() => {
+            props.setNotification("");
+          }, 2000);
         });
-      });
     }
   };
 
@@ -171,7 +182,12 @@ const App = () => {
         setNotification={setNotification}
       />
       <h3>Numbers</h3>
-      <Persons persons={persons} filter={filter} setPersons={setPersons} />
+      <Persons
+        persons={persons}
+        filter={filter}
+        setPersons={setPersons}
+        setNotification={setNotification}
+      />
     </div>
   );
 };
