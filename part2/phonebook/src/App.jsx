@@ -120,7 +120,6 @@ const Persons = (props) => {
           });
         })
         .catch((error) => {
-          console.log(true);
           props.setNotification(
             `Information of ${name} has already been removed from server`
           );
