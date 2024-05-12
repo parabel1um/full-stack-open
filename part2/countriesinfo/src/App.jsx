@@ -56,19 +56,26 @@ const App = () => {
       a.name.toLowerCase().includes(props.searchTerm.toLowerCase())
     );
 
+    const handleSelectCountry = (countryName) => {
+      setCountry(countryName);
+      DisplayInfoAboutSingleCountry(countryName);
+    };
+
     if (searchResults.length > 10) {
       return <p>Too many matches, specify another filter</p>;
     } else if (searchResults.length > 1) {
       return (
         <div>
           {searchResults.map((a) => (
-            <p key={a.name}>{a.name}</p>
+            <div key={a.name}>
+              <p>{a.name}</p>
+              <button onClick={() => handleSelectCountry(a.name)}>Show</button>
+            </div>
           ))}
         </div>
       );
-    } else if (searchResults.length == 1) {
-      setCountry(searchResults[0].name);
-      DisplayInfoAboutSingleCountry(searchResults[0].name);
+    } else if (searchResults.length === 1) {
+      handleSelectCountry(searchResults[0].name);
     } else {
       return <p>No Country found</p>;
     }
