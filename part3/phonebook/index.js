@@ -64,6 +64,24 @@ app.post("/api/persons", (request, response) => {
     number: body.number,
   };
 
+  if (!body.name) {
+    return response.status(400).json({
+      error: "name missing",
+    });
+  } else if (!body.number) {
+    return response.status(400).json({
+      error: "number missing",
+    });
+  } else if (numbers.some((person) => person.name === body.name)) {
+    return response.status(409).json({
+      error: `${body.name} already exists`,
+    });
+  } else if (numbers.some((person) => person.number === body.number)) {
+    return response.status(409).json({
+      error: `${body.number} already exists`,
+    });
+  }
+
   numbers.concat(person);
 
   response.json(person);
