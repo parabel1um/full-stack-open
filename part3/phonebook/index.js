@@ -24,6 +24,8 @@ let numbers = [
   },
 ];
 
+app.use(express.json());
+
 app.get("/api/persons", (request, response) => {
   response.json(numbers);
 });
@@ -51,6 +53,20 @@ app.delete("/api/persons/:id", (request, response) => {
   numbers = numbers.filter((person) => person.id !== Number(request.params.id));
 
   response.status(204).end();
+});
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+
+  const person = {
+    id: Math.floor(Math.random() * 30000),
+    name: body.name,
+    number: body.number,
+  };
+
+  numbers.concat(person);
+
+  response.json(person);
 });
 
 const PORT = 3001;
