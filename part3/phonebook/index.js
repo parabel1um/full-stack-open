@@ -98,7 +98,7 @@ app.post("/api/persons", postMorgan, (request, response) => {
     });
   }
 
-  numbers.concat(person);
+  numbers.push(person);
 
   response.json(person);
 });
