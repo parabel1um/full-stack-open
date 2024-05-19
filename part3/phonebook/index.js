@@ -27,6 +27,7 @@ let numbers = [
 
 app.use(express.json());
 app.use(morgan("tiny"));
+app.use(express.static("dist"));
 
 app.get("/api/persons", (request, response) => {
   response.json(numbers);
@@ -102,7 +103,7 @@ app.post("/api/persons", postMorgan, (request, response) => {
   response.json(person);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
