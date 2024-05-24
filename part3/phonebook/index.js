@@ -45,18 +45,11 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end();
 });
 
-const postMorgan = morgan((tokens, req, res) => {
-  return [
-    tokens.method(req, res),
-    tokens.url(req, res),
-    tokens.status(req, res),
-    tokens.res(req, res, "content-length"),
-    "-",
-    tokens["response-time"](req, res),
-    "ms",
-    JSON.stringify(req),
-  ].join(" ");
-});
+morgan.token("body", (req) => JSON.stringify(req.body));
+
+const postMorgan = morgan(
+  ":method :url :status :res[content-length] - :response-time ms :body"
+);
 
 app.post("/api/persons", postMorgan, (request, response) => {
   const body = request.body;
@@ -83,11 +76,16 @@ app.post("/api/persons", postMorgan, (request, response) => {
     return response.status(409).json({
       error: `${body.number} already exists`,
     });
+  } else {
+    const person = new Person({
+      name: body.name,
+      number: body.number,
+    });
+
+    person.save().then((person) => {
+      response.json(person);
+    });
   }
-
-  numbers.push(person);
-
-  response.json(person);
 });
 
 const PORT = process.env.PORT || 3001;
