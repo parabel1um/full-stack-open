@@ -15,28 +15,34 @@ const Person = require("./modules/person");
 
 let numbers = [];
 
-app.get("/api/persons", (request, response) => {
-  Person.find({}).then((result) => {
-    response.json(result);
-  });
+app.get("/api/persons", (request, response, next) => {
+  Person.find({})
+    .then((result) => {
+      response.json(result);
+    })
+    .catch((error) => next(error));
 });
 
 app.get("/info", (request, response) => {
   let count = Person.length;
   let date = new Date();
-  response.send(`<p>Phonebook has info for ${count} people</p>
+  response.send(
+    `<p>Phonebook has info for ${count} people</p>
   <p>${date}</p>
-  `);
+  `
+  );
 });
 
-app.get("/api/persons/:id", (request, response) => {
-  Person.findById(request.params.id).then((result) => {
-    if (result) {
-      response.json(result);
-    } else {
-      response.status(404).end();
-    }
-  });
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((result) => {
+      if (result) {
+        response.json(result);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 app.delete("/api/persons/:id", (request, response, next) => {
@@ -53,42 +59,44 @@ const postMorgan = morgan(
   ":method :url :status :res[content-length] - :response-time ms :body"
 );
 
-app.post("/api/persons", postMorgan, (request, response) => {
+app.post("/api/persons", postMorgan, (request, response, next) => {
   const body = request.body;
 
-  const person = {
-    id: Math.floor(Math.random() * 30000),
-    name: body.name,
-    number: body.number,
-  };
-
-  if (!body.name) {
+  if (!body.name || !body.number) {
     return response.status(400).json({
-      error: "name missing",
-    });
-  } else if (!body.number) {
-    return response.status(400).json({
-      error: "number missing",
-    });
-  } else if (numbers.some((person) => person.name === body.name)) {
-    return response.status(409).json({
-      error: `${body.name} already exists`,
-    });
-  } else if (numbers.some((person) => person.number === body.number)) {
-    return response.status(409).json({
-      error: `${body.number} already exists`,
-    });
-  } else {
-    const person = new Person({
-      name: body.name,
-      number: body.number,
-    });
-
-    person.save().then((person) => {
-      response.json(person);
+      error: "name or number missing",
     });
   }
+
+  Person.findOne({ name: body.name })
+    .then((existing) => {
+      if (existing) {
+        return response.status(409).json({
+          error: `${body.name} already exists`,
+        });
+      }
+
+      const person = new Person({
+        name: body.name,
+        number: body.number,
+      });
+
+      person
+        .save()
+        .then((savedPerson) => {
+          response.json(savedPerson);
+        })
+        .catch((error) => next(error));
+    })
+    .catch((error) => next(error));
 });
+
+const errorHandler = (error, request, response, next) => {
+  console.log(error);
+  response.status(500).send({ error: error.message });
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
