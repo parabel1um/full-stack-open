@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const password = process.argv[2];
 const name = process.argv[3];
 const number = process.argv[4];
 const url = String(process.env.MONGODB_URI);
@@ -41,7 +40,7 @@ if (process.argv.length === 3) {
 
   person
     .save()
-    .then((result) => {
+    .then(() => {
       console.log(`added ${name} number ${number} to phonebook`);
       mongoose.connection.close();
     })
