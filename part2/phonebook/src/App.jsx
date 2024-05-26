@@ -32,30 +32,46 @@ const PersonForm = (props) => {
         console.log(id);
         let newObject = { name: props.newName, number: props.newNumber };
 
-        service.update(id, newObject).then((response) => {
-          console.log(response.data);
-          props.setPersons(
-            props.persons.map((p) => (p.id === id ? response.data : p))
-          );
-          props.setNotification(`Number updated for ${props.newName}`);
-          setTimeout(() => {
-            props.setNotification("");
-          }, 2000);
-        });
+        service
+          .update(id, newObject)
+          .then((response) => {
+            console.log(response.data);
+            props.setPersons(
+              props.persons.map((p) => (p.id === id ? response.data : p))
+            );
+            props.setNotification(`Number updated for ${props.newName}`);
+            setTimeout(() => {
+              props.setNotification("");
+            }, 2000);
+          })
+          .catch((error) => {
+            props.setNotification(error.response.data.error);
+            setTimeout(() => {
+              props.setNotification("");
+            }, 2000);
+          });
         props.setNewName("");
         props.setNewNumber("");
       }
     } else {
       let newObject = { name: props.newName, number: props.newNumber };
 
-      service.add(newObject).then((response) => {
-        console.log(response.data);
-        props.setPersons([...props.persons, response.data]);
-        props.setNotification(`Added ${props.newName}`);
-        setTimeout(() => {
-          props.setNotification("");
-        }, 2000);
-      });
+      service
+        .add(newObject)
+        .then((response) => {
+          console.log(response.data);
+          props.setPersons([...props.persons, response.data]);
+          props.setNotification(`Added ${props.newName}`);
+          setTimeout(() => {
+            props.setNotification("");
+          }, 2000);
+        })
+        .catch((error) => {
+          props.setNotification(error.response.data.error);
+          setTimeout(() => {
+            props.setNotification("");
+          }, 2000);
+        });
       props.setNewName("");
       props.setNewNumber("");
     }

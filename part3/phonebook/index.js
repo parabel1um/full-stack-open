@@ -56,14 +56,17 @@ app.put("/api/persons/:id", (request, response, next) => {
     });
   }
 
-  const person = {
-    name: body.name,
-    number: body.number,
-  };
-
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  Person.findByIdAndUpdate(request.params.id, request.body, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
     .then((updated) => {
-      response.json(updated);
+      if (updated) {
+        response.json(updated);
+      } else {
+        response.status(404).end();
+      }
     })
     .catch((error) => next(error));
 });
@@ -115,8 +118,18 @@ app.post("/api/persons", postMorgan, (request, response, next) => {
 });
 
 const errorHandler = (error, request, response, next) => {
-  console.log(error);
-  response.status(500).send({ error: error.message });
+  console.error(error.message);
+
+  if (response.headersSent) {
+    return next(error);
+  }
+
+  if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
+  }
+
+  response.status(500).json({ error: "An unknown error occurred" });
+  next(error);
 };
 
 app.use(errorHandler);
