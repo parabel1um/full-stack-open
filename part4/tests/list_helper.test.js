@@ -107,9 +107,16 @@ describe("favorite blog", () => {
     blogs: 3,
   };
 
-  const author = listHelper.mostBlogs;
-
   test("returns the author with the most blogs", () => {
-    assert.deepStrictEqual(author(blogs), mostBlogs);
+    assert.deepStrictEqual(listHelper.mostBlogs(blogs), mostBlogs);
+  });
+
+  const mostAuthorLikes = {
+    author: "Edsger W. Dijkstra",
+    likes: 17,
+  };
+
+  test("author with the most likes across all blogs", () => {
+    assert.deepStrictEqual(listHelper.mostLikes(blogs), mostAuthorLikes);
   });
 });
