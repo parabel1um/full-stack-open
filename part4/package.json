@@ -1,14 +1,12 @@
 {
-  "name": "phonebook",
+  "name": "bloglist",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "start": "node index.js",
-    "build:ui": "rm -rf dist && cd ../frontend && npm run build && cp -r dist ../backend",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,8 +14,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "mongoose": "^8.4.0",
-    "morgan": "^1.10.0",
-    "nodemon": "^3.1.0"
+    "mongoose": "^8.4.1",
+    "nodemon": "^3.1.2"
   }
 }
