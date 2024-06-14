@@ -38,6 +38,7 @@ test("blog posts identifier is id", async () => {
 test("new blog can be added", async () => {
   const newBlog = {
     title: "just testing",
+    url: "http://localhost:3001/",
   };
 
   await api
@@ -60,6 +61,22 @@ test("likes property is missing", async () => {
   for (let set of keys) {
     assert(!set.includes("likes"));
   }
+});
+
+test("POST /api/blogs with missing url responds with 400", async () => {
+  const newBlog = {
+    title: "New Blog Title",
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(400);
+});
+
+test("POST /api/blogs with missing title responds with 400", async () => {
+  const newBlog = {
+    url: "http://localhost:3001/",
+  };
+
+  await api.post("/api/blogs").send(newBlog).expect(400);
 });
 
 after(async () => {

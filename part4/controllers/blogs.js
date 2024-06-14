@@ -29,8 +29,12 @@ blogsRouter.post("/", async (request, response) => {
     likes: likes,
   });
 
-  const savedBlog = await blog.save();
-  response.status(201).json(savedBlog);
+  if (url && title) {
+    const savedBlog = await blog.save();
+    response.status(201).json(savedBlog);
+  } else {
+    response.status(400).json("Url or title missing");
+  }
 });
 
 blogsRouter.delete("/:id", async (request, response) => {
