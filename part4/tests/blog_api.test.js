@@ -53,6 +53,15 @@ test("new blog can be added", async () => {
   assert(contents.includes("just testing"));
 });
 
+test("likes property is missing", async () => {
+  const response = await api.get("/api/blogs");
+  const keys = response.body.map((e) => Object.keys(e));
+
+  for (let set of keys) {
+    assert(!set.includes("likes"));
+  }
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
