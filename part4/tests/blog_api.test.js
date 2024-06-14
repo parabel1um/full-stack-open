@@ -5,6 +5,7 @@ const supertest = require("supertest");
 const app = require("../app");
 const helper = require("./test_helper");
 const Blog = require("../models/blog");
+const logger = require("../utils/logger");
 
 const api = supertest(app);
 
@@ -32,6 +33,24 @@ test("blog posts identifier is id", async () => {
   blogs.forEach((e) => {
     assert.ok(Object.keys(e).includes("id"));
   });
+});
+
+test("new blog can be added", async () => {
+  const newBlog = {
+    title: "just testing",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const notesAtEnd = await helper.notesInDb();
+  assert.strictEqual(notesAtEnd.length, helper.initialBlogs.length + 1);
+
+  const contents = notesAtEnd.map((e) => e.title);
+  assert(contents.includes("just testing"));
 });
 
 after(async () => {
