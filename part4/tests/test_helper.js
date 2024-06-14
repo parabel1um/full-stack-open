@@ -2,12 +2,22 @@ const Blog = require("../models/blog");
 
 const initialBlogs = [
   {
-    title: "My story of becoming solo entrepreneur",
+    title: "My story of becoming solo entrepeneur",
+    likes: 19,
+    url: "url",
     id: "665ad6710702ce231fbfe386",
   },
   {
     title: "How I make passive income",
-    id: "665aed6f753be36413bc3d38",
+    url: "url",
+    likes: 14,
+    id: "666c7acaaf92dd672c6ac664",
+  },
+  {
+    title: "How I make passive income at 25",
+    url: "url",
+    likes: 17,
+    id: "666c7b08af92dd672c6ac666",
   },
 ];
 

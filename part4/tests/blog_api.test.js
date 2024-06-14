@@ -54,12 +54,12 @@ test("new blog can be added", async () => {
   assert(contents.includes("just testing"));
 });
 
-test("likes property is missing", async () => {
+test("likes property is not missing", async () => {
   const response = await api.get("/api/blogs");
   const keys = response.body.map((e) => Object.keys(e));
 
   for (let set of keys) {
-    assert(!set.includes("likes"));
+    assert(set.includes("likes"));
   }
 });
 
@@ -90,6 +90,25 @@ test("deleting a single note returns 204 and removes the content from database",
 
   const contents = blogsAtEnd.map((e) => e.title);
   assert(!contents.includes(blogsAtStart[0].title));
+});
+
+test("data is changed on individual blog and returns 200", async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToChange = blogsAtStart[0];
+
+  const newBlog = {
+    title: blogToChange.title,
+    url: blogToChange.url,
+    likes: blogToChange.likes + 1,
+  };
+
+  const response = await api
+    .put(`/api/blogs/${blogToChange.id}`)
+    .send(newBlog)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  assert.strictEqual(response.body.likes, blogToChange.likes + 1);
 });
 
 after(async () => {
