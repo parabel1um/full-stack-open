@@ -25,6 +25,15 @@ test("correct number of blogs", async () => {
   assert.strictEqual(response.body.length, helper.initialBlogs.length);
 });
 
+test("blog posts identifier is id", async () => {
+  const response = await api.get("/api/blogs");
+  const blogs = response.body;
+
+  blogs.forEach((e) => {
+    assert.ok(Object.keys(e).includes("id"));
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
