@@ -47,7 +47,7 @@ test("new blog can be added", async () => {
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  const notesAtEnd = await helper.notesInDb();
+  const notesAtEnd = await helper.blogsInDb();
   assert.strictEqual(notesAtEnd.length, helper.initialBlogs.length + 1);
 
   const contents = notesAtEnd.map((e) => e.title);
@@ -77,6 +77,19 @@ test("POST /api/blogs with missing title responds with 400", async () => {
   };
 
   await api.post("/api/blogs").send(newBlog).expect(400);
+});
+
+test("deleting a single note returns 204 and removes the content from database", async () => {
+  const blogsAtStart = await helper.blogsInDb();
+
+  await api.delete(`/api/blogs/${blogsAtStart[0].id}`).expect(204);
+
+  const blogsAtEnd = await helper.blogsInDb();
+
+  assert.strictEqual(helper.initialBlogs.length - 1, blogsAtEnd.length);
+
+  const contents = blogsAtEnd.map((e) => e.title);
+  assert(!contents.includes(blogsAtStart[0].title));
 });
 
 after(async () => {
