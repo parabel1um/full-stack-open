@@ -5,6 +5,8 @@ const supertest = require("supertest");
 const app = require("../app");
 const helper = require("./test_helper");
 const Blog = require("../models/blog");
+const User = require("../models/user");
+const bcrypt = require("bcrypt");
 const logger = require("../utils/logger");
 
 const api = supertest(app);
@@ -16,6 +18,18 @@ beforeEach(async () => {
     let blogObject = new Blog(blog);
     await blogObject.save();
   }
+});
+
+beforeEach(async () => {
+  await User.deleteMany({});
+
+  const passwordHash = await bcrypt.hash("hel", 10);
+  const user = new User({
+    username: "Matas",
+    passwordHash,
+  });
+
+  await user.save();
 });
 
 test("correct number of blogs", async () => {
@@ -109,6 +123,54 @@ test("data is changed on individual blog and returns 200", async () => {
     .expect("Content-Type", /application\/json/);
 
   assert.strictEqual(response.body.likes, blogToChange.likes + 1);
+});
+
+test("data is not created if password is less than three characters", async () => {
+  const usersAtStart = await helper.usersInDb();
+
+  const User = {
+    name: "Rob",
+    username: "ofewwe",
+    password: "we",
+  };
+
+  const response = await api
+    .post("/api/users")
+    .send(User)
+    .expect(400)
+    .expect("Content-Type", /application\/json/);
+
+  const usersAtEnd = await helper.usersInDb();
+  assert.strictEqual(usersAtStart.length, usersAtEnd.length);
+
+  assert.strictEqual(
+    response.body.error,
+    "password and username must be at least three characters long"
+  );
+});
+
+test("data is not created if username is less than three characters", async () => {
+  const usersAtStart = await helper.usersInDb();
+
+  const User = {
+    name: "Davd",
+    username: "ro",
+    password: "weee",
+  };
+
+  const response = await api
+    .post("/api/users")
+    .send(User)
+    .expect(400)
+    .expect("Content-Type", /application\/json/);
+
+  const usersAtEnd = await helper.usersInDb();
+  assert.strictEqual(usersAtStart.length, usersAtEnd.length);
+
+  assert.strictEqual(
+    response.body.error,
+    "password and username must be at least three characters long"
+  );
 });
 
 after(async () => {
