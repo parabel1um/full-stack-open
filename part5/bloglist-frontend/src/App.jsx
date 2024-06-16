@@ -3,6 +3,7 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Notification from "./components/Notification";
+import CreateForm from "./components/CreateForm";
 
 const Blogs = ({ blogs }) => {
   return (
@@ -19,7 +20,10 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [blogs, setBlogs] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -49,10 +53,38 @@ const App = () => {
       setPassword("");
       setUser(user);
     } catch (error) {
-      setErrorMessage("Wrong Credentials");
+      setMessage("Wrong Credentials");
       setTimeout(() => {
-        setErrorMessage(null);
+        setMessage(null);
       }, 5000);
+    }
+  };
+
+  const handleCreate = async (event) => {
+    event.preventDefault();
+
+    const blogObject = {
+      title: title,
+      author: author,
+      url: url,
+      user: user._id,
+    };
+
+    try {
+      const response = await blogService.create(blogObject);
+
+      if (response) {
+        setBlogs(blogs.concat(response));
+        setMessage("A new blog has been added");
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
+        setTitle("");
+        setAuthor("");
+        setUrl("");
+      }
+    } catch (error) {
+      console.error("Error creating blog:", error);
     }
   };
 
@@ -82,7 +114,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification notification={errorMessage} />
+      <Notification notification={message} />
       {user === null ? (
         loginForm()
       ) : (
@@ -96,6 +128,16 @@ const App = () => {
           >
             logout
           </button>
+          <h2>create new</h2>
+          <CreateForm
+            handleCreate={handleCreate}
+            title={title}
+            setTitle={setTitle}
+            author={author}
+            setAuthor={setAuthor}
+            url={url}
+            setUrl={setUrl}
+          />
           <Blogs blogs={blogs} />
         </div>
       )}
