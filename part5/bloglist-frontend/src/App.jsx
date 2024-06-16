@@ -24,6 +24,7 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const [notificationType, setNotificationType] = useState("");
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -53,10 +54,11 @@ const App = () => {
       setPassword("");
       setUser(user);
     } catch (error) {
-      setMessage("Wrong Credentials");
+      setNotificationType("error");
+      setMessage("wrong username or password");
       setTimeout(() => {
         setMessage(null);
-      }, 5000);
+      }, 3000);
     }
   };
 
@@ -75,7 +77,8 @@ const App = () => {
 
       if (response) {
         setBlogs(blogs.concat(response));
-        setMessage("A new blog has been added");
+        setNotificationType("message");
+        setMessage(`A new blog ${title} by ${author} added`);
         setTimeout(() => {
           setMessage(null);
         }, 3000);
@@ -114,7 +117,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification notification={message} />
+      <Notification notification={message} type={notificationType} />
       {user === null ? (
         loginForm()
       ) : (
