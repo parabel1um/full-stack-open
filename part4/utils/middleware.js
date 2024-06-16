@@ -1,4 +1,6 @@
 const logger = require("./logger");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 const requestLogger = (request, response, next) => {
   logger.info("Method:", request.method);
@@ -21,6 +23,8 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).json({ error: error.message });
   } else if (error.name === "JsonWebTokenError") {
     return response.status(401).json({ error: "token invalid" });
+  } else if (error.message.includes("Cannot read properties of null")) {
+    return response.status(400).json({ error: "User not found" });
   }
 
   next(error);
@@ -37,9 +41,26 @@ const tokenExtractor = (request, response, next) => {
   return next();
 };
 
+const userExtractor = async (request, response, next) => {
+  if (!request.token) {
+    request.token = null;
+  } else {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET);
+    if (!decodedToken.id) {
+      response.status(400).json({ error: "Token invalid" });
+      request.token = null;
+    } else {
+      request.user = await User.findById(decodedToken.id);
+    }
+  }
+
+  next();
+};
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
   tokenExtractor,
+  userExtractor,
 };
