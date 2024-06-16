@@ -12,22 +12,34 @@ const logger = require("../utils/logger");
 const api = supertest(app);
 
 beforeEach(async () => {
-  await Blog.deleteMany({});
-
-  for (let blog of helper.initialBlogs) {
-    let blogObject = new Blog(blog);
-    await blogObject.save();
-  }
-});
-
-beforeEach(async () => {
   await User.deleteMany({});
 
   const passwordHash = await bcrypt.hash("hel", 10);
   const user = new User({
     username: "Matas",
+    blogs: [],
     passwordHash,
   });
+
+  await user.save();
+});
+
+beforeEach(async () => {
+  await Blog.deleteMany({});
+
+  const users = await User.find({});
+  const user = users[0];
+
+  for (let blog of helper.initialBlogs) {
+    let blogObject = new Blog({
+      title: blog.title,
+      url: blog.url,
+      likes: blog.likes,
+      user: user.id,
+    });
+    await blogObject.save();
+    user.blogs = user.blogs.concat(blogObject._id);
+  }
 
   await user.save();
 });
@@ -55,8 +67,16 @@ test("new blog can be added", async () => {
     url: "http://localhost:3001/",
   };
 
+  const user = {
+    username: "Matas",
+    password: "hel",
+  };
+
+  const login = await api.post("/api/login").send(user);
+
   await api
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${login.body.token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -96,7 +116,17 @@ test("POST /api/blogs with missing title responds with 400", async () => {
 test("deleting a single note returns 204 and removes the content from database", async () => {
   const blogsAtStart = await helper.blogsInDb();
 
-  await api.delete(`/api/blogs/${blogsAtStart[0].id}`).expect(204);
+  const user = {
+    username: "Matas",
+    password: "hel",
+  };
+
+  const login = await api.post("/api/login").send(user);
+
+  await api
+    .delete(`/api/blogs/${blogsAtStart[0].id}`)
+    .set("Authorization", `Bearer ${login.body.token}`)
+    .expect(204);
 
   const blogsAtEnd = await helper.blogsInDb();
 
