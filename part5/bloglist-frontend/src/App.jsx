@@ -6,11 +6,11 @@ import Notification from "./components/Notification";
 import CreateForm from "./components/CreateForm";
 import Togglable from "./components/Togglable";
 
-const Blogs = ({ blogs }) => {
+const Blogs = ({ blogs, user }) => {
   return (
     <>
       {blogs.map((blog) => (
-        <Blog key={blog} blog={blog} />
+        <Blog key={blog} blog={blog} user={user} />
       ))}
     </>
   );
@@ -119,7 +119,7 @@ const App = () => {
           <Togglable buttonLabel="new blog" ref={createFormref}>
             <CreateForm handleCreate={handleCreate} />
           </Togglable>
-          <Blogs blogs={blogs} />
+          <Blogs blogs={blogs} user={user} />
         </div>
       )}
     </div>
