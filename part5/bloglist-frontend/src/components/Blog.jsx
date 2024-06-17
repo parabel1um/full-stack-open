@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Blog = ({ blog, user, addLikes }) => {
+const Blog = ({ blog, user, addLikes, handleDelete }) => {
   const [visible, setVisible] = useState(false);
   const [likes, setLikes] = useState(blog.likes);
 
@@ -48,6 +48,7 @@ const Blog = ({ blog, user, addLikes }) => {
             </button>
           </p>
           <p style={childStyle}>{blog.user ? user.name : ""}</p>
+          <button onClick={() => handleDelete(blog.id)}>remove</button>
         </div>
       </div>
     </div>

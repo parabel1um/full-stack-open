@@ -72,6 +72,10 @@ const App = () => {
     await blogService.update(id, blogObject);
   };
 
+  const handleDelete = async (id) => {
+    await blogService.deleteBlog(id);
+  };
+
   const loginForm = () => {
     return (
       <form onSubmit={handleLogin}>
@@ -116,7 +120,13 @@ const App = () => {
             <CreateForm handleCreate={handleCreate} />
           </Togglable>
           {blogs.map((blog) => (
-            <Blog key={blog} blog={blog} user={user} addLikes={addLikes} />
+            <Blog
+              key={blog}
+              blog={blog}
+              user={user}
+              addLikes={addLikes}
+              handleDelete={handleDelete}
+            />
           ))}
         </div>
       )}
