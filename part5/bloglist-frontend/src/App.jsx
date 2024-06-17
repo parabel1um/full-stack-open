@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -22,9 +22,6 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [message, setMessage] = useState(null);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [notificationType, setNotificationType] = useState("");
 
   useEffect(() => {
@@ -63,32 +60,19 @@ const App = () => {
     }
   };
 
-  const handleCreate = async (event) => {
-    event.preventDefault();
+  const createFormref = useRef();
 
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url,
-      user: user._id,
-    };
+  const handleCreate = async (blogObject) => {
+    createFormref.current.toggleVisibility();
 
-    try {
-      const response = await blogService.create(blogObject);
-
-      if (response) {
-        setBlogs(blogs.concat(response));
-        setNotificationType("message");
-        setMessage(`A new blog ${title} by ${author} added`);
-        setTimeout(() => {
-          setMessage(null);
-        }, 3000);
-        setTitle("");
-        setAuthor("");
-        setUrl("");
-      }
-    } catch (error) {
-      console.error("Error creating blog:", error);
+    const response = await blogService.create(blogObject);
+    if (response) {
+      setBlogs(blogs.concat(response));
+      setNotificationType("message");
+      setMessage(`A new blog ${title} by ${author} added`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
     }
   };
 
@@ -132,16 +116,8 @@ const App = () => {
           >
             logout
           </button>
-          <Togglable buttonLabel="new blog">
-            <CreateForm
-              handleCreate={handleCreate}
-              title={title}
-              setTitle={setTitle}
-              author={author}
-              setAuthor={setAuthor}
-              url={url}
-              setUrl={setUrl}
-            />
+          <Togglable buttonLabel="new blog" ref={createFormref}>
+            <CreateForm handleCreate={handleCreate} />
           </Togglable>
           <Blogs blogs={blogs} />
         </div>
