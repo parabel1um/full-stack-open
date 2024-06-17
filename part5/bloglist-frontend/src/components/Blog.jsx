@@ -20,14 +20,14 @@ const Blog = ({ blog, user, addLikes }) => {
   };
 
   const handleLike = () => {
+    setLikes(likes + 1);
     const blogObject = {
       title: blog.title,
       author: blog.author,
       url: blog.url,
-      likes: blog.likes + 1,
+      likes: likes,
     };
     addLikes(blog.id, blogObject);
-    setLikes(likes + 1);
   };
 
   return (
