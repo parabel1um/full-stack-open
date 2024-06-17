@@ -4,6 +4,7 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Notification from "./components/Notification";
 import CreateForm from "./components/CreateForm";
+import Togglable from "./components/Togglable";
 
 const Blogs = ({ blogs }) => {
   return (
@@ -131,16 +132,17 @@ const App = () => {
           >
             logout
           </button>
-          <h2>create new</h2>
-          <CreateForm
-            handleCreate={handleCreate}
-            title={title}
-            setTitle={setTitle}
-            author={author}
-            setAuthor={setAuthor}
-            url={url}
-            setUrl={setUrl}
-          />
+          <Togglable buttonLabel="new blog">
+            <CreateForm
+              handleCreate={handleCreate}
+              title={title}
+              setTitle={setTitle}
+              author={author}
+              setAuthor={setAuthor}
+              url={url}
+              setUrl={setUrl}
+            />
+          </Togglable>
           <Blogs blogs={blogs} />
         </div>
       )}
