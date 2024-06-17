@@ -6,16 +6,6 @@ import Notification from "./components/Notification";
 import CreateForm from "./components/CreateForm";
 import Togglable from "./components/Togglable";
 
-const Blogs = ({ blogs, user }) => {
-  return (
-    <>
-      {blogs.map((blog) => (
-        <Blog key={blog} blog={blog} user={user} />
-      ))}
-    </>
-  );
-};
-
 const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -76,6 +66,10 @@ const App = () => {
     }
   };
 
+  const addLikes = async (id, blogObject) => {
+    await blogService.update(id, blogObject);
+  };
+
   const loginForm = () => {
     return (
       <form onSubmit={handleLogin}>
@@ -119,7 +113,9 @@ const App = () => {
           <Togglable buttonLabel="new blog" ref={createFormref}>
             <CreateForm handleCreate={handleCreate} />
           </Togglable>
-          <Blogs blogs={blogs} user={user} />
+          {blogs.map((blog) => (
+            <Blog key={blog} blog={blog} user={user} addLikes={addLikes} />
+          ))}
         </div>
       )}
     </div>

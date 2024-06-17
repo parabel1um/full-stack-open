@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog, user, addLikes }) => {
   const [visible, setVisible] = useState(false);
+  const [likes, setLikes] = useState(blog.likes);
 
   const toggleVisibility = () => {
     setVisible(!visible);
@@ -18,6 +19,17 @@ const Blog = ({ blog, user }) => {
     margin: 0,
   };
 
+  const handleLike = () => {
+    const blogObject = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+    };
+    addLikes(blog.id, blogObject);
+    setLikes(likes + 1);
+  };
+
   return (
     <div style={blogStyle}>
       <div style={{ display: visible ? "none" : "" }}>
@@ -30,9 +42,12 @@ const Blog = ({ blog, user }) => {
           <button onClick={toggleVisibility}>hide</button>
           <p style={childStyle}>{blog.url}</p>
           <p style={childStyle}>
-            likes {blog.likes} <button style={childStyle}>like</button>
+            likes {likes}{" "}
+            <button style={childStyle} onClick={handleLike}>
+              like
+            </button>
           </p>
-          <p style={childStyle}>{blog.user !== null ? user.name : ""}</p>
+          <p style={childStyle}>{blog.user ? user.name : ""}</p>
         </div>
       </div>
     </div>
