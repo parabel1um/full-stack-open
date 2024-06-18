@@ -61,7 +61,9 @@ const App = () => {
     if (response) {
       setBlogs(blogs.concat(response));
       setNotificationType("message");
-      setMessage(`A new blog ${title} by ${author} added`);
+      setMessage(
+        `A new blog ${blogObject.title} by ${blogObject.author} added`
+      );
       setTimeout(() => {
         setMessage(null);
       }, 3000);
